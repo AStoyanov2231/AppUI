@@ -1,11 +1,10 @@
-import { WebView } from 'react-native-webview';
-import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Platform } from 'react-native';
-import { useRef, useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
+import { useRef, useState } from 'react';
+import { ActivityIndicator, Animated, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
-import { getXamppUrl, config } from '../config';
+import { WebView } from 'react-native-webview';
+import { config, getXamppUrl } from '../config';
 
 export default function RootLayout() {
   const webViewRef = useRef<WebView>(null);
@@ -61,6 +60,13 @@ export default function RootLayout() {
     ];
   };
 
+  const getIndicatorStyle = (tabName: string) => {
+    return [
+      styles.indicator,
+      activeTab === tabName && styles.activeIndicator
+    ];
+  };
+
   return (
     <View style={styles.container}>
       <WebView
@@ -93,37 +99,44 @@ export default function RootLayout() {
         </Animated.View>
       )}
 
-      <BlurView 
-        intensity={Platform.OS === 'android' ? 80 : 5}
-        tint="light"
+      <View 
         style={[
-          styles.blurContainer,
+          styles.navigationContainer,
           {
             bottom: Platform.OS === 'android' ? insets.bottom : 0
           }
         ]}
       >
         <View style={styles.fallbackNavigation}>
-          <TouchableOpacity
-            style={getButtonStyle('places')}
-            onPress={() => navigateToPage('?app=1', 'places')}
-          >
-            <MaterialIcons name="place" size={24} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={getButtonStyle('chat')}
-            onPress={() => navigateToPage('?view=chat&app=1', 'chat')}
-          >
-            <MaterialIcons name="forum" size={24} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={getButtonStyle('profile')}
-            onPress={() => navigateToPage('?view=account&app=1', 'profile')}
-          >
-            <MaterialIcons name="person" size={24} color="#fff" />
-          </TouchableOpacity>
+          <View style={styles.tabContainer}>
+            <View style={getIndicatorStyle('places')} />
+            <TouchableOpacity
+              style={getButtonStyle('places')}
+              onPress={() => navigateToPage('?app=1', 'places')}
+            >
+              <MaterialIcons name="place" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.tabContainer}>
+            <View style={getIndicatorStyle('chat')} />
+            <TouchableOpacity
+              style={getButtonStyle('chat')}
+              onPress={() => navigateToPage('?view=chat&app=1', 'chat')}
+            >
+              <MaterialIcons name="forum" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.tabContainer}>
+            <View style={getIndicatorStyle('profile')} />
+            <TouchableOpacity
+              style={getButtonStyle('profile')}
+              onPress={() => navigateToPage('?view=account&app=1', 'profile')}
+            >
+              <MaterialIcons name="person" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
         </View>
-      </BlurView>
+      </View>
       <StatusBar style="dark" />
     </View>
   );
@@ -149,43 +162,64 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 10,
   },
-  blurContainer: {
+  navigationContainer: {
     position: 'absolute',
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    overflow: 'hidden',
+    backgroundColor: '#ffffff',
+    shadowColor: '#000000',
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 8,
   },
   fallbackNavigation: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 20,
+    alignItems: 'flex-start',
+    paddingVertical: 0,
     paddingHorizontal: 20,
+    paddingTop: 0,
+  },
+  tabContainer: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 0,
+    position: 'relative',
   },
   navButton: {
-    flex: 1,
     backgroundColor: '#6366f1',
     marginHorizontal: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 16,
+    paddingVertical: 4,
+    paddingHorizontal: 25,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
+    marginTop: 20,
+    marginBottom: 36,
+    minHeight: 50,
     elevation: 4,
     shadowColor: '#007AFF',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.45,
     shadowRadius: 4,
   },
   activeNavButton: {
-    borderWidth: 2,
-    borderColor: '#fff0000',
     elevation: 6,
     shadowOpacity: 0.35,
+  },
+  indicator: {
+    position: 'absolute',
+    top: 0,
+    height: 0,
+    width: 0,
+    backgroundColor: 'transparent',
+  },
+  activeIndicator: {
+    position: 'absolute',
+    top: 0,
+    height: 5,
+    width: 70,
+    backgroundColor: '#6366f1',
+    borderRadius: 2,
+    marginTop: 4,
   },
 });

@@ -7,10 +7,10 @@ export const config = {
     // For Android Emulator: http://10.0.2.2:80
     // For Physical Device: http://YOUR_COMPUTER_IP:80
     // For iOS Simulator: http://localhost:80
-    url: 'https://myaou.atract.me',
+    url: 'https://myaou.atract.me/',
     
     // Optional: Add a specific path to your website
-    path: '/index.php',
+    path: 'index.php',
   },
   
   // WebView Configuration
